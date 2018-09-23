@@ -1,0 +1,132 @@
+=========================================================================================================================
+############################################Bulk Transaction wise Calculation############################################
+=========================================================================================================================
+
+BUY  TransactionQuantity = 100 + 9000  = 9100
+SELL TransactionQuantity = 200 + 20000 = 20200
+
+Start of the Day Position Entry:-
+APPL,101,E,10000
+APPL,201,I,-10000
+
+E, Quantity(I/P Position file) =  10000
+I, Quantity(I/P Position file) = -10000
+=========================================================================================================================
+If Transaction Type = B,
+                                For AccountType = E, Quantity = Quantity(I/P Position file) + TransactionQuantity
+                                For AccountType = I, Quantity = Quantity(I/P Position file) - TransactionQuantity
+								
+E =  10000 + 9100  =  19100	Qty calculated from BUY Txn
+I = -10000 - 9100  = -19100 	Qty calculated from BUY Txn                                                                                                                           
+=========================================================================================================================                                                              If Transaction Type = S ,
+                                For AccountType = E, Quantity = Quantity(Qty calculated from BUY Txn) - TransactionQuantity
+                                For AccountType = I, Quantity = Quantity(Qty calculated from BUY Txn) + TransactionQuantity
+								
+E =  19100 - 20200 =  -1100	End of the Day Position on Acc "E" after applying all the TransactionQuantity
+I = -19100 + 20200 =   1100     End of the Day Position on Acc "I" after applying all the TransactionQuantity
+=========================================================================================================================                                                              Delta
+E = -1100 - 10000   = -11100	Net VOlume
+I =  1100 -(-10000) =  11100    Net VOlume
+=========================================================================================================================
+Expected Outcome:-
+APPL,101,I,-1100,-11100
+APPL,201,E,1100,11100
+
+Calculated Outcome:-
+APPL,101,I,1100,11100		
+APPL,201,E,-1100,-11100
+=========================================================================================================================
+
+
+
+=========================================================================================================================
+############################################Each Transaction wise Calculation############################################
+=========================================================================================================================
+BUY =   -------------------------
+		|Tx_ID		|	Tx_Qty	|
+		-------------------------
+		| 5			| 100		|
+		-------------------------
+		| 10		| 9000		|
+		-------------------------
+		
+SELL =  -------------------------
+		|Tx_ID		|	Tx_Qty	|
+		-------------------------
+		| 1			| 200		|
+		-------------------------
+		| 6			| 20000		|
+		-------------------------
+
+Start of the Day Position Entry:-		
+APPL,101,E,10000
+APPL,201,I,-10000
+
+E, Quantity(I/P Position file) =  10000
+I, Quantity(I/P Position file) = -10000
+=========================================================================================================================
+If Transaction Type = B ,
+                                For AccountType = E, Quantity = Quantity + TransactionQuantity
+                                For AccountType = I, Quantity = Quantity - TransactionQuantity
+If Transaction Type = S ,
+                                For AccountType = E, Quantity = Quantity - TransactionQuantity
+                                For AccountType = I, Quantity = Quantity + TransactionQuantity                                                                               
+=========================================================================================================================                                                              TransactionID 1) SELL
+E, Quantity = Quantity(I/P Position file) - TransactionQuantity
+I, Quantity = Quantity(I/P Position file) + TransactionQuantity
+
+E =  10000 - 200 =  9800
+I = -10000 + 200 = -9800
+---------------------------------------------------
+TransactionID 5) BUY
+E, Quantity = Quantity(Position from previous Txn) + TransactionQuantity
+I, Quantity = Quantity(Position from previous Txn) - TransactionQuantity
+
+E =  9800 + 100 =  9900
+I = -9800 - 100 = -9900
+---------------------------------------------------
+TransactionID 6) SELL
+E, Quantity = Quantity(Position from previous Txn) - TransactionQuantity
+I, Quantity = Quantity(Position from previous Txn) + TransactionQuantity
+
+E =  9900 - 20000 = -10100
+I = -9900 + 20000 =  10100
+---------------------------------------------------
+TransactionID 10) BUY  
+E, Quantity = Quantity(Position from previous Txn) + TransactionQuantity
+I, Quantity = Quantity(Position from previous Txn) - TransactionQuantity
+                                                                                                                 
+E = -10100 + 9000 =  -1100   	End of the Day Position on Acc "E" after applying all the TransactionQuantity
+I =  10100 - 9000 =   1100   	End of the Day Position on Acc "I" after applying all the TransactionQuantity 
+=========================================================================================================================                                                              Delta
+E = -1100 - 10000   = -11100 	Net VOlume
+I =  1100 -(-10000) =  11100 	Net VOlume
+=========================================================================================================================
+Expected End of the Day Position:- 
+APPL,101,I,-1100,-11100
+APPL,201,E,1100,11100
+
+Calculated End of the Day Position:-
+APPL,101,I,1100,11100
+APPL,201,E,-1100,-11100
+=========================================================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
